@@ -40,7 +40,7 @@ char	*get_path(t_data *data, char *str)
 		n = !access(path, F_OK) + !access(path, X_OK);
 		if (n == 2)
 			return (path);
-		(n == 1) && error(NULL, errno, 1);
+		(n == 1) && error(NULL, 126, 1);
 		free (path);
 		paths++;
 	}
