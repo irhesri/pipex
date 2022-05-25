@@ -8,11 +8,12 @@ short	error(char *str, int err, short b)
 	else if (str)
 	{
 		my_putstr(str, 2);
+		my_putstr("\n", 2);
 		exit (err);
 	}
 	else
 	{
-		// my_putstr(strerror(err), 2);
+		my_putstr(strerror(err), 2);
 		my_putstr("\n", 2);
 		exit(err);
 	}
