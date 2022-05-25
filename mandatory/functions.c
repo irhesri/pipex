@@ -17,6 +17,20 @@ char	*my_strjoin(char *str1, char *str2, short b)
 	return (str);
 }
 
+char	*its_path(char *str)
+{
+	if (!access(str, F_OK))
+	{
+		if (!access(str, X_OK))
+			return (str);
+		my_putstr(str, 2);
+		error(": Permission denied", 126, 1);
+	}
+	my_putstr(str, 2);
+	error(": command not found", 127, 1);
+	return (NULL);
+}
+
 //	HANDLE ERRORS
 char	*get_path(t_data *data, char *str)
 {
@@ -26,26 +40,23 @@ char	*get_path(t_data *data, char *str)
 
 	paths = data->paths;
 	if (my_strch(str, '/'))
-	{
-		n = !access(str, F_OK) + !access(str, X_OK);
-		if (n == 2)
-			return (str);
-		(n == 1) && error(NULL, 126, 1);
-		error(NULL, 127, 1);
-	}
+		return (its_path(str));
 	while (paths && *paths)
 	{
 		path = my_strjoin(*paths, str,
 				**paths != '\0');
-		n = !access(path, F_OK) + !access(path, X_OK);
-		if (n == 2)
-			return (path);
-		(n == 1) && error(NULL, 126, 1);
+		if (!access(path, F_OK))
+		{
+			if (!access(path, X_OK))
+				return (path);
+			my_putstr(str, 2);
+			error(": Permission denied", 126, 1);
+		}
 		free (path);
 		paths++;
 	}
 	my_putstr(str, 2);
-	error(": command not found\n", 127, 1);
+	error(": command not found", 127, 1);
 	return (NULL);
 }
 
@@ -64,7 +75,7 @@ void	get_data(t_data *data, int ac, char **av, char **env)
 	(data->fd[1] < 0) && error(av[ac - 1], 0, 0);
 	av[ac - 1] = NULL;
 	data->commands = av + 2;
-	data->cmd_index = 0;
+	data->cmd = 0;
 	data->size = ac - 3;
 }
 

@@ -17,6 +17,20 @@ char	*my_strjoin(char *str1, char *str2, short b)
 	return (str);
 }
 
+char	*its_path(char *str)
+{
+	if (!access(str, F_OK))
+	{
+		if (!access(str, X_OK))
+			return (str);
+		my_putstr(str, 2);
+		error(": Permission denied", 126, 1);
+	}
+	my_putstr(str, 2);
+	error(": command not found", 127, 1);
+	return (NULL);
+}
+
 //	HANDLE ERRORS
 char	*get_path(t_data *data, char *str)
 {
@@ -26,33 +40,31 @@ char	*get_path(t_data *data, char *str)
 
 	paths = data->paths;
 	if (my_strch(str, '/'))
-	{
-		n = !access(str, F_OK) + !access(str, X_OK);
-		if (n == 2)
-			return (str);
-		(n == 1) && error(NULL, 126, 1);
-		error(NULL, 127, 1);
-	}
+		return (its_path(str));
 	while (paths && *paths)
 	{
 		path = my_strjoin(*paths, str,
 				**paths != '\0');
-		n = !access(path, F_OK) + !access(path, X_OK);
-		if (n == 2)
-			return (path);
-		(n == 1) && error(NULL, errno, 1);
+		if (!access(path, F_OK))
+		{
+			if (!access(path, X_OK))
+				return (path);
+			my_putstr(str, 2);
+			error(": Permission denied", 126, 1);
+		}
 		free (path);
 		paths++;
 	}
 	my_putstr(str, 2);
-	error(": command not found\n", 127, 1);
+	error(": command not found", 127, 1);
 	return (NULL);
 }
 
 void	get_data(t_data *data, int ac, char **av, char **env)
 {
-	int	mode;
+	int	i;
 
+	i = -1;
 	data->last_id = malloc(sizeof(pid_t));
 	*(data->last_id) = 0;
 	data->paths = NULL;
@@ -60,21 +72,20 @@ void	get_data(t_data *data, int ac, char **av, char **env)
 		env++;
 	if (env && *env)
 		data->paths = my_split(*env + 5, ':', 1);
-	mode = O_APPEND;
-	if (!my_strncmp(av[1], "here_doc", 9))
-		data->fd[0] = 0;
-	else
-	{
-		data->fd[0] = open(av[1], O_RDONLY);
-		(data->fd[0] < 0) && error(av[1], 0, 0);
-		mode = O_TRUNC;
-	}
-	data->fd[1] = open(av[ac - 1], O_CREAT | mode | O_WRONLY, 0644);
+	data->fd[0] = open(av[1], O_RDONLY);
+	(data->fd[0] < 0) && error(av[1], 0, 0);
+	data->fd[1] = open(av[ac - 1], O_TRUNC | O_CREAT | O_WRONLY, 0644);
 	(data->fd[1] < 0) && error(av[ac - 1], 0, 0);
 	av[ac - 1] = NULL;
 	data->commands = av + 2;
-	data->cmd_index = 0;
+	data->cmd = 0;
 	data->size = ac - 3;
+	data->p = (int **) malloc(sizeof(int *) * (data->size - 1));
+	while (++i < data->size - 1)
+	{
+		data->p[i] = (int *) malloc(sizeof(int) * 2);
+		(pipe(data->p[i]) == -1) && error(NULL, errno, 1);
+	}
 }
 
 int	wait_for_child(t_data *data)

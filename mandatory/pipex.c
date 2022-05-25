@@ -17,7 +17,7 @@ void	run_command(t_data *data, int *pipe1, int *pipe2, short b)
 		(dup2(pipe2[1], 1) == -1) && error(NULL, errno, 1);
 		close(pipe1[0]);
 		close(pipe2[1]);
-		command = my_split(data->commands[data->cmd_index], ' ', 0);
+		command = my_split(data->commands[data->cmd], ' ', 0);
 		path = get_path(data, *command);
 		printf("%s\n", path);
 		execve(path, command, NULL);
@@ -42,7 +42,7 @@ int	main(int ac, char **av, char **env)
 		run_command(data, data->fd, p, 0);
 	else
 		close(p[1]);
-	data->cmd_index++;
+	data->cmd++;
 	if (data->fd[1] > 0)
 		run_command(data, p, data->fd, 1);
 	else

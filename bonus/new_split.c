@@ -103,7 +103,7 @@ static	char	**fill(t_struct *size, char *str, char c, short b)
 }
 
 // b == 1 python split
-char	**my_split(char *str, char c, short b/*, int *len*/)
+char	**my_split(char *str, char c, short b)
 {
 	t_struct	*size;
 	t_struct	*tmp;
@@ -115,13 +115,11 @@ char	**my_split(char *str, char c, short b/*, int *len*/)
 		str++;
 	size = get_size(str, c, b);
 	words = fill(size, str, c, b);
-    // (*len) = size->data;
 	while (size)
 	{
 		tmp = size->next;
 		free (size);
 		size = tmp;
 	}
-	
 	return (words);
 }
