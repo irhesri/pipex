@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   functions.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/27 10:18:22 by irhesri           #+#    #+#             */
+/*   Updated: 2022/05/27 10:18:24 by irhesri          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 char	*my_strjoin(char *str1, char *str2, short b)
@@ -32,30 +44,33 @@ char	*its_path(char *str)
 }
 
 //	HANDLE ERRORS
-char	*get_path(t_data *data, char *str)
+char	*get_path(t_data *data, char *str, char *arg)
 {
 	char	*path;
 	char	**paths;
 	short	n;
 
 	paths = data->paths;
-	if (my_strch(str, '/'))
-		return (its_path(str));
-	while (paths && *paths)
+	if (str && *str)
 	{
-		path = my_strjoin(*paths, str,
-				**paths != '\0');
-		if (!access(path, F_OK))
+		if (my_strch(str, '/'))
+			return (its_path(str));
+		while (paths && *paths)
 		{
-			if (!access(path, X_OK))
-				return (path);
-			my_putstr(str, 2);
-			error(": Permission denied", 126, 1);
+			path = my_strjoin(*paths, str,
+					**paths != '\0');
+			if (!access(path, F_OK))
+			{
+				if (!access(path, X_OK))
+					return (path);
+				my_putstr(arg, 2);
+				error(": Permission denied", 126, 1);
+			}
+			free (path);
+			paths++;
 		}
-		free (path);
-		paths++;
 	}
-	my_putstr(str, 2);
+	my_putstr(arg, 2);
 	error(": command not found", 127, 1);
 	return (NULL);
 }

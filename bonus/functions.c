@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   functions.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/27 10:19:38 by irhesri           #+#    #+#             */
+/*   Updated: 2022/05/27 10:19:40 by irhesri          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 char	*my_strjoin(char *str1, char *str2, short b)
@@ -32,30 +44,33 @@ char	*its_path(char *str)
 }
 
 //	HANDLE ERRORS
-char	*get_path(t_data *data, char *str)
+char	*get_path(t_data *data, char *str, char *arg)
 {
 	char	*path;
 	char	**paths;
 	short	n;
 
 	paths = data->paths;
-	if (my_strch(str, '/'))
-		return (its_path(str));
-	while (paths && *paths)
+	if (str && *str)
 	{
-		path = my_strjoin(*paths, str,
-				**paths != '\0');
-		if (!access(path, F_OK))
+		if (my_strch(str, '/'))
+			return (its_path(str));
+		while (paths && *paths)
 		{
-			if (!access(path, X_OK))
-				return (path);
-			my_putstr(str, 2);
-			error(": Permission denied", 126, 1);
+			path = my_strjoin(*paths, str,
+					**paths != '\0');
+			if (!access(path, F_OK))
+			{
+				if (!access(path, X_OK))
+					return (path);
+				my_putstr(arg, 2);
+				error(": Permission denied", 126, 1);
+			}
+			free (path);
+			paths++;
 		}
-		free (path);
-		paths++;
 	}
-	my_putstr(str, 2);
+	my_putstr(arg, 2);
 	error(": command not found", 127, 1);
 	return (NULL);
 }
@@ -63,6 +78,7 @@ char	*get_path(t_data *data, char *str)
 void	get_data(t_data *data, int ac, char **av, char **env)
 {
 	int	i;
+	int	mode;
 
 	i = -1;
 	data->last_id = malloc(sizeof(pid_t));
@@ -72,9 +88,16 @@ void	get_data(t_data *data, int ac, char **av, char **env)
 		env++;
 	if (env && *env)
 		data->paths = my_split(*env + 5, ':', 1);
-	data->fd[0] = open(av[1], O_RDONLY);
-	(data->fd[0] < 0) && error(av[1], 0, 0);
-	data->fd[1] = open(av[ac - 1], O_TRUNC | O_CREAT | O_WRONLY, 0644);
+	mode = O_APPEND;
+	if (!my_strncmp(av[1], "here_doc", 9))
+		data->fd[0] = 0;
+	else
+	{
+		data->fd[0] = open(av[1], O_RDONLY);
+		(data->fd[0] < 0) && error(av[1], 0, 0);
+		mode = O_TRUNC;
+	}
+	data->fd[1] = open(av[ac - 1],  O_CREAT | mode | O_WRONLY, 0644);
 	(data->fd[1] < 0) && error(av[ac - 1], 0, 0);
 	av[ac - 1] = NULL;
 	data->commands = av + 2;

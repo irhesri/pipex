@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/27 10:19:48 by irhesri           #+#    #+#             */
+/*   Updated: 2022/05/27 10:19:50 by irhesri          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PIPEX_H
 # define PIPEX_H
 
@@ -13,6 +25,7 @@ typedef struct s_data
 {
 	char	**paths;
 	char	**commands;
+	char	**env;
 	int		size;
 	int		**p;
 	int		cmd;
@@ -21,7 +34,8 @@ typedef struct s_data
 }	t_data;
 
 void	get_data(t_data *data, int ac, char **av, char **env);
-char	*get_path(t_data *data, char *str);
+char	*get_path(t_data *data, char *str, char *arg);
+// char	*get_path(t_data *data, char *str);
 int		wait_for_child(t_data *data);
 short	error(char *str, int err, short b);
 char	*get_next_line(int fd);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/27 10:20:09 by irhesri           #+#    #+#             */
+/*   Updated: 2022/05/27 10:20:12 by irhesri          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 void	run_command(t_data *data, int *pipe1, int *pipe2, short b)
@@ -18,8 +30,8 @@ void	run_command(t_data *data, int *pipe1, int *pipe2, short b)
 		close(pipe1[0]);
 		close(pipe2[1]);
 		command = my_split(data->commands[data->cmd], ' ', 0);
-		path = get_path(data, *command);
-		execve(path, command, NULL);
+		path = get_path(data, *command, data->commands[data->cmd]);
+		execve(path, command, data->env);
 		error(NULL, errno, 1);
 	}
 	close (pipe1[0]);
@@ -59,8 +71,11 @@ int	main(int ac, char **av, char **env)
 	t_data	*data;
 	int		n;
 
+	if (ac < 5)
+		error("not enough arguments", 1, 1);
 	data = (t_data *) malloc(sizeof(t_data));
 	get_data(data, ac, av, env);
+	data->env = env;
 	if (data->fd[0] > 0)
 		run_command(data, data->fd, data->p[data->cmd], 0);
 	else if (!data->fd[0])
