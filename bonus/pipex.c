@@ -66,6 +66,35 @@ void	its_here_hoc(t_data *data, int *pipe1, int *pipe2)
 	data->commands--;
 }
 
+int	wait_for_child(t_data *data)
+{
+	int	n;
+	int	id;
+	int	*status;
+
+	status = malloc(sizeof(int));
+	*status = 0;
+	n = 0;
+	id = -2;
+	while (1)
+	{
+		id = waitpid(-1, status, 0);
+		if (data->fd[1] < 0)
+			n = 1;
+		else if (id == *data->last_id)
+		{
+			if (WIFEXITED(*status))
+				n = WEXITSTATUS(*status);
+			else if (WIFSIGNALED(*status))
+				n = 128 + WTERMSIG(*status);
+		}
+		if (id == -1)
+			break ;
+	}
+	free (status);
+	return (n);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	t_data	*data;

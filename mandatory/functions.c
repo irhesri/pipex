@@ -51,24 +51,20 @@ char	*get_path(t_data *data, char *str, char *arg)
 	short	n;
 
 	paths = data->paths;
-	if (str && *str)
+	if (*str && my_strch(str, '/'))
+		return (its_path(str));
+	while (*str && paths && *paths)
 	{
-		if (my_strch(str, '/'))
-			return (its_path(str));
-		while (paths && *paths)
+		path = my_strjoin(*paths, str, **paths != '\0');
+		if (!access(path, F_OK))
 		{
-			path = my_strjoin(*paths, str,
-					**paths != '\0');
-			if (!access(path, F_OK))
-			{
-				if (!access(path, X_OK))
-					return (path);
-				my_putstr(arg, 2);
-				error(": Permission denied", 126, 1);
-			}
-			free (path);
-			paths++;
+			if (!access(path, X_OK))
+				return (path);
+			my_putstr(arg, 2);
+			error(": Permission denied", 126, 1);
 		}
+		free (path);
+		paths++;
 	}
 	my_putstr(arg, 2);
 	error(": command not found", 127, 1);
