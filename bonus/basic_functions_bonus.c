@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   basic_functions.c                                  :+:      :+:    :+:   */
+/*   basic_functions_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:19:24 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/27 10:19:26 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/05/28 15:10:36 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 //	b = 1 exit
 short	error(char *str, int err, short b)

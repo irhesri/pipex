@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:18:35 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/27 10:34:55 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/05/28 16:17:02 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ void	run_command(t_data *data, int *pipe1, int *pipe2, short b)
 		*(data->last_id) = id;
 	if (!id)
 	{
-		(pipe1[1] > 0) && close(pipe1[1]);
-		(pipe2[0] > 0) && close(pipe2[0]);
+		(!b) && close(pipe2[0]);
 		(dup2(pipe1[0], 0) == -1) && error(NULL, errno, 1);
 		(dup2(pipe2[1], 1) == -1) && error(NULL, errno, 1);
 		close(pipe1[0]);

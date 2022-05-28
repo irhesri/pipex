@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:20:09 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/27 10:20:12 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/05/28 15:10:25 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 void	run_command(t_data *data, int *pipe1, int *pipe2, short b)
 {
@@ -19,12 +19,11 @@ void	run_command(t_data *data, int *pipe1, int *pipe2, short b)
 	char	*path;
 
 	id = fork();
-	if (b)
+	if (b == 1)
 		*(data->last_id) = id;
 	if (!id)
 	{
-		(pipe1[1] > 0) && close(pipe1[1]);
-		(pipe2[0] > 0) && close(pipe2[0]);
+		(b != 1) && close(pipe2[0]);
 		(dup2(pipe1[0], 0) == -1) && error(NULL, errno, 1);
 		(dup2(pipe2[1], 1) == -1) && error(NULL, errno, 1);
 		close(pipe1[0]);

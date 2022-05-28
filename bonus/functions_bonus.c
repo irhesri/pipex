@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   functions.c                                        :+:      :+:    :+:   */
+/*   functions_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:19:38 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/27 10:19:40 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/05/28 15:56:51 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 char	*my_strjoin(char *str1, char *str2, short b)
 {
@@ -48,12 +48,11 @@ char	*get_path(t_data *data, char *str, char *arg)
 {
 	char	*path;
 	char	**paths;
-	short	n;
 
 	paths = data->paths;
-	if (*str && my_strch(str, '/'))
+	if (str && *str && my_strch(str, '/'))
 		return (its_path(str));
-	while (*str && paths && *paths)
+	while (str && *str && paths && *paths)
 	{
 		path = my_strjoin(*paths, str, **paths != '\0');
 		if (!access(path, F_OK))
