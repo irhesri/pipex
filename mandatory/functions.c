@@ -6,7 +6,7 @@
 /*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:18:22 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/28 15:56:26 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/05/28 17:51:39 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	*get_path(t_data *data, char *str, char *arg)
 	char	**paths;
 
 	paths = data->paths;
-	if (str && *str && my_strch(str, '/'))
+	if (str && *str && (my_strch(str, '/') || !paths))
 		return (its_path(str));
 	while (str && *str && paths && *paths)
 	{

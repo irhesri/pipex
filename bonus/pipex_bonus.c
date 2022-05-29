@@ -6,7 +6,7 @@
 /*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:20:09 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/28 15:10:25 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/05/28 18:28:22 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,7 @@ int	main(int ac, char **av, char **env)
 	t_data	*data;
 	int		n;
 
-	if (ac < 5)
-		error("not enough arguments", 1, 1);
+	(ac < 5) && error("not enough arguments", 1, 1);
 	data = (t_data *) malloc(sizeof(t_data));
 	get_data(data, ac, av, env);
 	data->env = env;
@@ -108,6 +107,7 @@ int	main(int ac, char **av, char **env)
 		run_command(data, data->fd, data->p[data->cmd], 0);
 	else if (!data->fd[0])
 	{
+		(ac < 6) && error("not enough arguments", 1, 1);
 		its_here_hoc(data, data->p[data->cmd], data->p[data->cmd + 1]);
 		data->cmd++;
 	}
