@@ -95,7 +95,7 @@ void	get_data(t_data *data, int ac, char **av, char **env)
 	data->last_id = malloc(sizeof(pid_t));
 	*(data->last_id) = 0;
 	data->paths = NULL;
-	while (env && *env && strncmp(*env, "PATH=", 5))
+	while (env && *env && my_strncmp(*env, "PATH=", 5))
 		env++;
 	if (env && *env)
 		data->paths = my_split(*env + 5, ':', 1);
@@ -104,10 +104,4 @@ void	get_data(t_data *data, int ac, char **av, char **env)
 	data->commands = av + 2;
 	data->cmd = 0;
 	data->size = ac - 3;
-	data->p = (int **) malloc(sizeof(int *) * (data->size - 1));
-	while (++i < data->size - 1)
-	{
-		data->p[i] = (int *) malloc(sizeof(int) * 2);
-		(pipe(data->p[i]) == -1) && error(NULL, errno, 1);
-	}
 }

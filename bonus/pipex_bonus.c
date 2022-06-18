@@ -12,47 +12,55 @@
 
 #include "pipex_bonus.h"
 
-void	run_command(t_data *data, int *pipe1, int *pipe2, short b)
+void	run_command(t_data *data, int *pipe2, short b)
 {
-	pid_t	id;
-	char	**command;
-	char	*path;
+	pid_t		id;
+	char		**command;
+	char		*path;
+	static int	pipe1;
 
+	if (!pipe1)
+		pipe1 = data->fd[0];
 	id = fork();
-	if (b == 1)
-		*(data->last_id) = id;
+	*(data->last_id) = id;
 	if (!id)
 	{
+		if (pipe1 < 0 || pipe2[1] < 0)
+			exit (1);
 		(b != 1) && close(pipe2[0]);
-		(dup2(pipe1[0], 0) == -1) && error(NULL, errno, 1);
+		(dup2(pipe1, 0) == -1) && error(NULL, errno, 1);
 		(dup2(pipe2[1], 1) == -1) && error(NULL, errno, 1);
-		close(pipe1[0]);
+		close(pipe1);
 		close(pipe2[1]);
 		command = my_split(data->commands[data->cmd], ' ', 0);
 		path = get_path(data, *command, data->commands[data->cmd]);
 		execve(path, command, data->env);
 		error(NULL, errno, 1);
 	}
-	close (pipe1[0]);
+	close (pipe1);
 	close (pipe2[1]);
+	pipe1 = pipe2[0];
 }
 
-void	its_here_hoc(t_data *data, int *pipe1, int *pipe2)
+void	its_here_hoc(t_data *data, int *pipe2)
 {
 	int		id;
 	int		len;
 	char	*str;
+	int		pipe1[2];
+	short	b;
 
-	str = NULL;
 	len = ft_strlen(*data->commands);
+	(pipe(pipe1) == -1) && error(NULL, errno, 1);
 	id = fork();
 	if (!id)
 	{
 		close (pipe1[0]);
-		while (my_strncmp(*data->commands, str, len))
+		str = get_next_line(0);
+		while (str && (my_strncmp(*data->commands, str, len) || str[len] != '\n'))
 		{
-			str && my_putstr(str, pipe1[1]);
-			str && my_putstr("\n", pipe1[1]);
+			my_putstr(str, pipe1[1]);
+			free(str);
 			str = get_next_line(0);
 		}
 		close(pipe1[1]);
@@ -61,7 +69,8 @@ void	its_here_hoc(t_data *data, int *pipe1, int *pipe2)
 	wait (NULL);
 	close (pipe1[1]);
 	data->commands++;
-	run_command(data, pipe1, pipe2, 0);
+	data->fd[0] = pipe1[0];
+	run_command(data, pipe2, 0);
 	data->commands--;
 }
 
@@ -78,9 +87,7 @@ int	wait_for_child(t_data *data)
 	while (1)
 	{
 		id = waitpid(-1, status, 0);
-		if (data->fd[1] < 0)
-			n = 1;
-		else if (id == *data->last_id)
+		if (id == *data->last_id)
 		{
 			if (WIFEXITED(*status))
 				n = WEXITSTATUS(*status);
@@ -98,27 +105,28 @@ int	main(int ac, char **av, char **env)
 {
 	t_data	*data;
 	int		n;
+	int		p[2];
 
 	(ac < 5) && error("not enough arguments", 1, 1);
 	data = (t_data *) malloc(sizeof(t_data));
 	get_data(data, ac, av, env);
 	data->env = env;
-	if (data->fd[0] > 0)
-		run_command(data, data->fd, data->p[data->cmd], 0);
+	(pipe(p) == -1) && error(NULL, errno, 1);
+	if (data->fd[0])
+		run_command(data, p, 0);
 	else if (!data->fd[0])
 	{
 		(ac < 6) && error("not enough arguments", 1, 1);
-		its_here_hoc(data, data->p[data->cmd], data->p[data->cmd + 1]);
+		its_here_hoc(data, p);
 		data->cmd++;
 	}
-	else
-		close (data->p[data->cmd][1]);
 	while (++(data->cmd) < data->size - 1)
-		run_command(data, data->p[data->cmd - 1], data->p[data->cmd], 0);
-	if (data->fd[1] > 0 && data->cmd - 1 < data->size)
-		run_command(data, data->p[data->cmd - 1], data->fd, 1);
-	else
-		close (data->p[data->cmd - 1][0]);
+	{
+		(pipe(p) == -1) && error(NULL, errno, 1);
+		run_command(data, p, 0);
+	}
+	if (data->cmd - 1 < data->size)
+		run_command(data, data->fd, 1);
 	n = wait_for_child(data);
 	exit (n);
 }

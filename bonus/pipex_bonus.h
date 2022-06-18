@@ -20,6 +20,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/wait.h>
+# include <limits.h>
 
 typedef struct s_data
 {
@@ -27,7 +28,6 @@ typedef struct s_data
 	char	**commands;
 	char	**env;
 	int		size;
-	int		**p;
 	int		cmd;
 	int		fd[2];
 	pid_t	*last_id;

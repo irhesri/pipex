@@ -68,7 +68,7 @@ short	my_strncmp(char *str1, char *str2, int n)
 {
 	if (!str1 || !str2)
 		return (1);
-	while (n-- && *str1 && *str2 && *str1 == *str2)
+	while (--n && *str1 && *str2 && *str1 == *str2)
 	{
 		str1++;
 		str2++;

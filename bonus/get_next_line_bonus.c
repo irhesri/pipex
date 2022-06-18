@@ -1,16 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: irhesri <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 08:11:49 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/28 15:10:31 by irhesri          ###   ########.fr       */
+/*   Updated: 2021/12/18 08:12:30 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 100
+#endif
 
 static	int	ft_strcopy(char *s1, char *s2, char c)
 {
@@ -31,13 +34,15 @@ static	int	ft_strcopy(char *s1, char *s2, char c)
 	return (i);
 }
 
-static char	*ft_endlsplit(char *s1, char *s2, int *size)
+char	*ft_endlsplit(char *s1, char *s2, int *size)
 {
+	int		size1;
 	int		i;
 	char	*str;
 
+	size1 = (*size) + BUFFER_SIZE + 1;
 	i = 0;
-	str = (char *) malloc(sizeof(char) * (*size) + 101);
+	str = (char *) malloc(sizeof(char) * size1);
 	if (!str)
 		return (NULL);
 	if (s1 && *s1)
@@ -57,35 +62,35 @@ char	*read_next_line(char *str, int fd)
 	int		size;
 
 	size = 0;
-	s = ft_endlsplit(NULL, str, &size);
-	if (size > 1 && s[size - 1] == '\n')
-	{
-		s[size - 1] = '\0';
+	s = NULL;
+	s = ft_endlsplit(s, str, &size);
+	if (size > 0 && s[size - 1] == '\n')
 		return (s);
-	}	
-	len = read(fd, str, 100);
+	len = 1;
 	while (len > 0)
 	{
-		str[len] = '\0';
-		s = ft_endlsplit(s, str, &size);
-		if (size > 1 && s[size - 1] == '\n')
+		len = read(fd, str, BUFFER_SIZE);
+		if (len > 0)
 		{
-			s[size - 1] = '\0';
-			return (s);
+			str[len] = '\0';
+			s = ft_endlsplit(s, str, &size);
+			if (size > 0 && s[size - 1] == '\n')
+				return (s);
 		}
-		len = read(fd, str, 100);
 	}
 	return (s);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*str;
+	static char	*str = NULL;
 	char		*s;
 
+	if (fd < 0 || (BUFFER_SIZE <= 0) || fd > FOPEN_MAX)
+		return (NULL);
 	if (!str)
 	{
-		str = (char *) malloc(sizeof(char) * 101);
+		str = (char *) malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (!str)
 			return (NULL);
 		str[0] = '\0';
