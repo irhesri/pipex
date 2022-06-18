@@ -75,7 +75,7 @@ void	get_data(t_data *data, int ac, char **av, char **env)
 	data->last_id = malloc(sizeof(pid_t));
 	*(data->last_id) = 0;
 	data->paths = NULL;
-	while (env && *env && strncmp(*env, "PATH=", 5))
+	while (env && *env && my_strncmp(*env, "PATH=", 5))
 		env++;
 	if (env && *env)
 		data->paths = my_split(*env + 5, ':', 1);
