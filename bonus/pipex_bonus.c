@@ -23,10 +23,8 @@ void	run_command(t_data *data, int *pipe2, short b)
 		pipe1 = data->fd[0];
 	id = fork();
 	*(data->last_id) = id;
-	if (!id)
+	if (!id && pipe1 > 0 && pipe2[1] > 0)
 	{
-		if (pipe1 < 0 || pipe2[1] < 0)
-			exit (1);
 		(b != 1) && close(pipe2[0]);
 		(dup2(pipe1, 0) == -1) && error(NULL, errno, 1);
 		(dup2(pipe2[1], 1) == -1) && error(NULL, errno, 1);
@@ -37,18 +35,17 @@ void	run_command(t_data *data, int *pipe2, short b)
 		execve(path, command, data->env);
 		error(NULL, errno, 1);
 	}
-	close (pipe1);
-	close (pipe2[1]);
+	(pipe1 > 0) && close (pipe1);
+	(pipe2[1] > 0) && close (pipe2[1]);
 	pipe1 = pipe2[0];
 }
 
-void	its_here_hoc(t_data *data, int *pipe2)
+void	its_here_hoc(t_data *data)
 {
 	int		id;
 	int		len;
 	char	*str;
 	int		pipe1[2];
-	short	b;
 
 	len = ft_strlen(*data->commands);
 	(pipe(pipe1) == -1) && error(NULL, errno, 1);
@@ -57,7 +54,8 @@ void	its_here_hoc(t_data *data, int *pipe2)
 	{
 		close (pipe1[0]);
 		str = get_next_line(0);
-		while (str && (my_strncmp(*data->commands, str, len) || str[len] != '\n'))
+		while (str
+			&& (my_strncmp(*data->commands, str, len) || str[len] != '\n'))
 		{
 			my_putstr(str, pipe1[1]);
 			free(str);
@@ -68,10 +66,7 @@ void	its_here_hoc(t_data *data, int *pipe2)
 	}
 	wait (NULL);
 	close (pipe1[1]);
-	data->commands++;
 	data->fd[0] = pipe1[0];
-	run_command(data, pipe2, 0);
-	data->commands--;
 }
 
 int	wait_for_child(t_data *data)
@@ -89,7 +84,9 @@ int	wait_for_child(t_data *data)
 		id = waitpid(-1, status, 0);
 		if (id == *data->last_id)
 		{
-			if (WIFEXITED(*status))
+			if (data->fd[1] < 0)
+				n = 1;
+			else if (WIFEXITED(*status))
 				n = WEXITSTATUS(*status);
 			else if (WIFSIGNALED(*status))
 				n = 128 + WTERMSIG(*status);
@@ -110,16 +107,14 @@ int	main(int ac, char **av, char **env)
 	(ac < 5) && error("not enough arguments", 1, 1);
 	data = (t_data *) malloc(sizeof(t_data));
 	get_data(data, ac, av, env);
-	data->env = env;
 	(pipe(p) == -1) && error(NULL, errno, 1);
-	if (data->fd[0])
-		run_command(data, p, 0);
-	else if (!data->fd[0])
+	if (!data->fd[0])
 	{
 		(ac < 6) && error("not enough arguments", 1, 1);
-		its_here_hoc(data, p);
+		its_here_hoc(data);
 		data->cmd++;
 	}
+	run_command(data, p, 0);
 	while (++(data->cmd) < data->size - 1)
 	{
 		(pipe(p) == -1) && error(NULL, errno, 1);
