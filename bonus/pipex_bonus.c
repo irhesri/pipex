@@ -6,7 +6,7 @@
 /*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:20:09 by irhesri           #+#    #+#             */
-/*   Updated: 2022/08/04 10:37:57 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/08/04 13:25:51 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ void	run_command(t_data *data, int *pipe2, short b)
 		pipe1 = data->fd[0];
 	id = fork();
 	*(data->last_id) = id;
-	if (!id && pipe1 > 0 && pipe2[1] > 0)
+	if (!id)
 	{
+		if (pipe1 < 0 || pipe2[1] < 0)
+			exit (1);
 		(b != 1) && close(pipe2[0]);
 		(dup2(pipe1, 0) == -1) && error(NULL, errno, 1);
 		(dup2(pipe2[1], 1) == -1) && error(NULL, errno, 1);
@@ -84,9 +86,7 @@ int	wait_for_child(t_data *data)
 		id = waitpid(-1, status, 0);
 		if (id == *data->last_id)
 		{
-			if (data->fd[1] < 0)
-				n = 1;
-			else if (WIFEXITED(*status))
+			if (WIFEXITED(*status))
 				n = WEXITSTATUS(*status);
 			else if (WIFSIGNALED(*status))
 				n = 128 + WTERMSIG(*status);
