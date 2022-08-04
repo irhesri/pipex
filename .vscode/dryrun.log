@@ -1,9 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory `/Users/irhesri/Desktop/pipex'
-gcc  -o mandatory/basic_functions.o -c mandatory/basic_functions.c
-gcc  -o mandatory/functions.o -c mandatory/functions.c
-gcc  -o mandatory/new_split.o -c mandatory/new_split.c
-gcc  -o mandatory/pipex.o -c mandatory/pipex.c
-gcc  mandatory/basic_functions.o mandatory/functions.o mandatory/new_split.o mandatory/pipex.o -o pipex
-make: Leaving directory `/Users/irhesri/Desktop/pipex'
- 
