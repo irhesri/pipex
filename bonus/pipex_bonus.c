@@ -6,7 +6,7 @@
 /*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:20:09 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/28 18:28:22 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/08/04 10:37:57 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ int	main(int ac, char **av, char **env)
 		data->cmd++;
 	}
 	run_command(data, p, 0);
-	while (++(data->cmd) < data->size - 1)
+	while (++(data->cmd) < (data->size - 2))
 	{
 		(pipe(p) == -1) && error(NULL, errno, 1);
 		run_command(data, p, 0);
