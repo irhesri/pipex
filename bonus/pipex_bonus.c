@@ -6,7 +6,7 @@
 /*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:20:09 by irhesri           #+#    #+#             */
-/*   Updated: 2022/08/04 13:25:51 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/08/04 13:27:29 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ void	run_command(t_data *data, int *pipe2, short b)
 		close(pipe2[1]);
 		command = my_split(data->commands[data->cmd], ' ', 0);
 		path = get_path(data, *command, data->commands[data->cmd]);
-		execve(path, command, data->env);
-		error(NULL, errno, 1);
+		execve(path, command, data->env) && error(NULL, errno, 1);
 	}
 	(pipe1 > 0) && close (pipe1);
 	(pipe2[1] > 0) && close (pipe2[1]);
