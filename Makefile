@@ -6,7 +6,7 @@
 #    By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/27 21:49:31 by irhesri           #+#    #+#              #
-#    Updated: 2022/05/28 17:20:29 by irhesri          ###   ########.fr        #
+#    Updated: 2022/08/11 15:13:38 by irhesri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,6 @@ fclean: clean
 	@rm -rf $(NAME)
 	@rm -rf $(NAME_B)
 
-re: fclean all
+re: fclean $(NAME)
 
 .PHONY: all clean fclean re

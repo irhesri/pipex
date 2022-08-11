@@ -6,7 +6,7 @@
 /*   By: irhesri <irhesri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/27 10:19:24 by irhesri           #+#    #+#             */
-/*   Updated: 2022/05/28 15:10:36 by irhesri          ###   ########.fr       */
+/*   Updated: 2022/08/11 15:12:26 by irhesri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,7 @@ size_t	ft_strlen(char *str)
 
 short	my_putstr(char *str, int fd)
 {
-	while (str && *str)
-	{
-		write(fd, str, 1);
-		str++;
-	}
+	write(fd, str, ft_strlen(str));
 	return (1);
 }
 
